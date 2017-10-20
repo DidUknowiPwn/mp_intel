@@ -1,0 +1,19 @@
+>mode,mp
+>type,common
+
+#include "mp_mod.class"
+
+// Scripts
+// -- Client
+scriptparsetree,scripts/mp/gametypes/tdm.csc
+// -- Server
+scriptparsetree,scripts/mp/gametypes/tdm.gsc
+
+// Game Settings
+rawfile,gamedata/gamesettings/mp/gamesettings_tdm.cfg
+
+// Localization
+localize,mod
+
+// Sounds
+// sound,mp_mod

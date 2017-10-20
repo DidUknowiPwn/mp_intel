@@ -1,0 +1,15 @@
+---------------------------------------
+					INTEL					
+---------------------------------------
+
+Goal: Capture one of three intels located within the level and upload it as your base.
+
+Design:
+
+Three intel gameobjects spawn within the level and each has a percentage of being the "correct" intel (percentages totalling 100%).
+Intel is picked up and taken back to team's base where it has to be uploaded & validated which takes a total of 5 seconds.
+	* Validation is done based on the intel percentage / 100.
+
+A point is awarded if the intel is correct and the intel's are reset.
+
+Enemy team can attack friendly base and steal their intel by hijacking the upload center which takes 15 seconds where the friendly team will be notified of it being taken.
