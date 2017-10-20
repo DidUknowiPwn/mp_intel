@@ -2,9 +2,9 @@
 INTEL
 ------
 
-Goal: 
+Goal:
 
-Capture one of three intels located within the level and upload it as your base.
+Capture one of three intels located within the level and upload it at your base.
 
 Design:
 

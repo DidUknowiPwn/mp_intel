@@ -16,11 +16,18 @@
 #using scripts\mp\gametypes\_globallogic_audio;
 #using scripts\mp\gametypes\_spawning;
 #using scripts\mp\gametypes\_spawnlogic;
+#using scripts\mp\teams\_teams;
 #using scripts\mp\_util;
 // T7ScriptSuite
 #using scripts\m_shared\util_shared;
 
 #insert scripts\shared\shared.gsh;
+
+#define MODEL_BASE "thing"
+#define MODEL_INTEL "thing2"
+
+//#precache( "xmodel", MODEL_BASE );
+//#precache( "xmodel", MODEL_INTEL );
 
 #precache( "string", "MOD_OBJECTIVES_TDM" );
 #precache( "string", "MOD_OBJECTIVES_TDM_SCORE" );
@@ -121,22 +128,26 @@ function on_player_spawned()
 	// DEBUG
 	/#
 	self thread m_util::spawn_bot_button();
-	self thread m_util::button_pressed( &UseButtonPressed, &generate_weights );
+	self thread m_util::button_pressed( &ActionSlotOneButtonPressed, &generate_weights );
+	self thread m_util::button_pressed( &ActionSlotTwoButtonPressed, &spawn_intel );
 	#/
 }
 
 // ***************************
 // Gamemode Code
 // ***************************
+
 function intel()
 {
-
+	level.bases = []; // teams: allies, axis
+	level.intels = []; // array of intels
 }
 
 
 // ***************************
 // Logic Code
 // ***************************
+
 function generate_weights()
 {
 	// it's decent but could use a little bit more spreading
@@ -167,3 +178,61 @@ function generate_weights()
 // ***************************
 // Spawn Code
 // ***************************
+// self = level.bases
+function spawn_base()
+{
+	// model
+	// trigger
+}
+// self = level.intels
+function spawn_intel( spot )
+{
+	// TODO
+	if ( !isdefined( spot ) )
+		spot = self;
+	// model
+	model = Spawn( "script_model", spot.origin );
+	model SetModel( teams::get_flag_model( "allies" ) );//model SetModel( MODEL_INTEL );
+	visuals = Array( model );
+
+	// trigger
+	trigger = Spawn( "trigger_radius_use", spot.origin + (0,0,32), 0, 32, 32 );
+	trigger SetCursorHint( "HINT_NOICON" );
+	trigger SetHintString( "Press &&1 to gather intel");
+	trigger TriggerIgnoreTeam();
+	trigger UseTriggerRequireLookAt();
+
+	// gameobject - carry
+	obj = gameobjects::create_carry_object( "any", trigger, visuals, (0,0,0), undefined );
+	obj gameobjects::set_team_use_time( "friendly", 0 );
+	obj gameobjects::set_team_use_time( "enemy", 0 );
+	obj gameobjects::set_visible_team( "any" );
+	obj gameobjects::allow_carry( "any" );
+	obj gameobjects::set_2d_icon( "friendly", level.iconDefend2D );
+	obj gameobjects::set_3d_icon( "friendly", level.iconDefend3D );
+	obj gameobjects::set_2d_icon( "enemy", level.iconCapture2D );
+	obj gameobjects::set_3d_icon( "enemy", level.iconCapture3D );
+
+	obj.onPickup = &on_pickup_intel;
+	obj.onDrop = &on_drop_intel;
+	obj.allowWeapons = true;
+	obj.objIDPingFriendly = true;
+
+	return obj;
+}
+// self = gameobject
+function on_pickup_intel( player )
+{
+	player.has_intel = true;
+	IPrintLn( "Picked up!" );
+	//self hide_intel();
+}
+
+function on_drop_intel( player )
+{
+	IPrintLn( "Dropped!" );
+}
+
+function hide_intel()
+{
+}
