@@ -49,7 +49,7 @@ function main()
 
 	gameobjects::register_allowed_gameobject( level.gameType );
 
-	globallogic_audio::set_leader_gametype_dialog ( undefined, undefined, "gameBoost", "gameBoost" );
+	globallogic_audio::set_leader_gametype_dialog( undefined, undefined, "gameBoost", "gameBoost" );
 
 	// Sets the scoreboard columns and determines with data is sent across the network
 	globallogic::setvisiblescoreboardcolumns( "score", "kills", "deaths", "kdratio", "assists" );
@@ -120,6 +120,7 @@ function on_player_spawned()
 {
 	// DEBUG
 	/#
+	self thread m_util::spawn_bot_button();
 	self thread m_util::button_pressed( &UseButtonPressed, &generate_weights );
 	#/
 }
