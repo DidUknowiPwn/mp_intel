@@ -1,4 +1,13 @@
-VERSION			"1"
-CONFIG			"C:\projects\cod\t5\bin\StringEd.cfg"
+VERSION				"1"
+CONFIG				"C:\projects\cod\t5\bin\StringEd.cfg"
+
+REFERENCE			OBJECTIVES_INTEL
+LANG_ENGLISH		"Capture the intels located somewhere and upload the correct one at your server to gain a point."
+
+REFERENCE			OBJECTIVES_INTEL_HINT
+LANG_ENGLISH		"Capture correct Intel and Defend your Server."
+
+REFERENCE			OBJECTIVES_INTEL_SCORE
+LANG_ENGLISH		"Capture the intels located somewhere and upload the correct one at your server to gain a point."
 
 ENDMARKER

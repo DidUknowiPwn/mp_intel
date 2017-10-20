@@ -5,12 +5,12 @@
 
 // Scripts
 // -- Client
-scriptparsetree,scripts/mp/gametypes/tdm.csc
+scriptparsetree,scripts/mp/gametypes/intel.csc
 // -- Server
-scriptparsetree,scripts/mp/gametypes/tdm.gsc
+scriptparsetree,scripts/mp/gametypes/intel.gsc
 
 // Game Settings
-rawfile,gamedata/gamesettings/mp/gamesettings_tdm.cfg
+rawfile,gamedata/gamesettings/mp/gamesettings_intel.cfg
 
 // Localization
 localize,mod
