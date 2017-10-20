@@ -8,19 +8,17 @@
 // Started: Octobe 19, 2017
 // ==========================================================
 
+// Base
+#using scripts\shared\callbacks_shared;
 #using scripts\shared\gameobjects_shared;
 #using scripts\shared\math_shared;
-#using scripts\shared\util_shared;
 #using scripts\mp\gametypes\_globallogic;
 #using scripts\mp\gametypes\_globallogic_audio;
-#using scripts\mp\gametypes\_globallogic_score;
-#using scripts\mp\gametypes\_globallogic_spawn;
 #using scripts\mp\gametypes\_spawning;
 #using scripts\mp\gametypes\_spawnlogic;
-#using scripts\mp\killstreaks\_killstreaks;
-#using scripts\mp\gametypes\_dogtags;
-#using scripts\mp\_teamops;
 #using scripts\mp\_util;
+// T7ScriptSuite
+#using scripts\m_shared\util_shared;
 
 #insert scripts\shared\shared.gsh;
 
@@ -45,6 +43,9 @@ function main()
 	level.overrideTeamScore = true;
 	level.onStartGameType = &onStartGameType;
 	level.onSpawnPlayer = &onSpawnPlayer;
+
+	//callback::on_connect( &on_player_connect );
+	callback::on_spawned( &on_player_spawned );
 
 	gameobjects::register_allowed_gameobject( level.gameType );
 
@@ -105,14 +106,63 @@ function onStartGameType()
 	SetDemoIntermissionPoint( spawnpoint.origin, spawnpoint.angles );
 }
 
-function onSpawnPlayer(predictedSpawn)
+function onSpawnPlayer( predictedSpawn )
 {
 	self.usingObj = undefined;
 
 	if ( level.useStartSpawns && !level.inGracePeriod && !level.playerQueuedRespawn )
-	{
 		level.useStartSpawns = false;
+
+	spawning::onSpawnPlayer( predictedSpawn );
+}
+
+function on_player_spawned()
+{
+	// DEBUG
+	/#
+	self thread m_util::button_pressed( &UseButtonPressed, &generate_weights );
+	#/
+}
+
+// ***************************
+// Gamemode Code
+// ***************************
+function intel()
+{
+
+}
+
+
+// ***************************
+// Logic Code
+// ***************************
+function generate_weights()
+{
+	// it's decent but could use a little bit more spreading
+	// we'll just need to randomize the weight values when being assigned
+	const N_MAX_PERCENTAGE = 100.0;
+	const N_MAX_SIZE = 3;
+
+	n_per_object = N_MAX_PERCENTAGE / N_MAX_SIZE;
+	n_total_perc = 0;
+	n_rand_perc = undefined;
+
+	a_weights = [];
+
+	for( i = 0; i < N_MAX_SIZE - 1; i++ )
+	{
+		n_rand_perc = RandomInt( Int( n_per_object ) );
+		n_total_perc += n_rand_perc;
+		ARRAY_ADD( a_weights, n_rand_perc );
 	}
 
-	spawning::onSpawnPlayer(predictedSpawn);
+	ARRAY_ADD( a_weights, Int( N_MAX_PERCENTAGE - n_total_perc ) );
+
+	for( i = 0; i < a_weights.size; i++ )
+		IPrintLn( "[" + i + 1 + "]: " + a_weights[i] );
 }
+
+
+// ***************************
+// Spawn Code
+// ***************************
