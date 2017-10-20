@@ -3,17 +3,25 @@
 
 #include "mp_mod.class"
 
-// Scripts
-// -- Client
+// [Scripts]
+// (Client)
 scriptparsetree,scripts/mp/gametypes/intel.csc
-// -- Server
+// (Server)
 scriptparsetree,scripts/mp/gametypes/intel.gsc
+//  {T7ScriptSuite}
+scriptparsetree,scripts/m_shared/array_shared.gsc
+scriptparsetree,scripts/m_shared/lui_shared.gsc
+scriptparsetree,scripts/m_shared/math_shared.gsc
+scriptparsetree,scripts/m_shared/player_shared.gsc
+scriptparsetree,scripts/m_shared/trigger_shared.gsc
+scriptparsetree,scripts/m_shared/util_shared.gsc
 
-// Game Settings
+
+// [Settings]
 rawfile,gamedata/gamesettings/mp/gamesettings_intel.cfg
 
-// Localization
+// [Localization]
 localize,mod
 
-// Sounds
+// [Sounds]
 // sound,mp_mod
