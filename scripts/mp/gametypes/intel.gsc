@@ -12,6 +12,7 @@
 #using scripts\shared\callbacks_shared;
 #using scripts\shared\gameobjects_shared;
 #using scripts\shared\math_shared;
+#using scripts\shared\popups_shared;
 #using scripts\mp\gametypes\_globallogic;
 #using scripts\mp\gametypes\_globallogic_audio;
 #using scripts\mp\gametypes\_spawning;
@@ -23,6 +24,10 @@
 
 #insert scripts\shared\shared.gsh;
 
+#precache( "objective", "allies_base" );
+#precache( "objective", "axis_base" );
+#precache( "objective", "hardpoint" );
+
 #define MODEL_BASE "thing"
 #define MODEL_INTEL "thing2"
 
@@ -32,6 +37,7 @@
 #precache( "string", "MOD_OBJECTIVES_TDM" );
 #precache( "string", "MOD_OBJECTIVES_TDM_SCORE" );
 #precache( "string", "MOD_OBJECTIVES_TDM_HINT" );
+#precache( "string", "MOD_RETRIEVED_INTEL" );
 
 function main()
 {
@@ -203,15 +209,11 @@ function spawn_intel( spot )
 	trigger UseTriggerRequireLookAt();
 
 	// gameobject - carry
-	obj = gameobjects::create_carry_object( "any", trigger, visuals, (0,0,0), undefined );
+	obj = gameobjects::create_carry_object( "neutral", trigger, visuals, (0,0,0), &"hardpoint" );
 	obj gameobjects::set_team_use_time( "friendly", 0 );
 	obj gameobjects::set_team_use_time( "enemy", 0 );
 	obj gameobjects::set_visible_team( "any" );
 	obj gameobjects::allow_carry( "any" );
-	obj gameobjects::set_2d_icon( "friendly", level.iconDefend2D );
-	obj gameobjects::set_3d_icon( "friendly", level.iconDefend3D );
-	obj gameobjects::set_2d_icon( "enemy", level.iconCapture2D );
-	obj gameobjects::set_3d_icon( "enemy", level.iconCapture3D );
 
 	obj.onPickup = &on_pickup_intel;
 	obj.onDrop = &on_drop_intel;
@@ -224,15 +226,12 @@ function spawn_intel( spot )
 function on_pickup_intel( player )
 {
 	player.has_intel = true;
-	IPrintLn( "Picked up!" );
-	//self hide_intel();
-}
+	player PlayLocalSound("mpl_flag_pickup_plr");
 
+	level thread popups::DisplayTeamMessageToAll( &"MOD_RETRIEVED_INTEL", player );
+}
+// self = gameobject
 function on_drop_intel( player )
 {
 	IPrintLn( "Dropped!" );
-}
-
-function hide_intel()
-{
 }
