@@ -13,4 +13,7 @@ LANG_ENGLISH		"Capture the intels located somewhere and upload the correct one a
 REFERENCE			RETRIEVED_INTEL
 LANG_ENGLISH		"Retrieved Intel"
 
+REFERENCE			DROPPED_INTEL
+LANG_ENGLISH		"Dropped Intel"
+
 ENDMARKER

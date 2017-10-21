@@ -13,6 +13,7 @@
 #using scripts\shared\gameobjects_shared;
 #using scripts\shared\math_shared;
 #using scripts\shared\popups_shared;
+#using scripts\shared\sound_shared;
 #using scripts\mp\gametypes\_globallogic;
 #using scripts\mp\gametypes\_globallogic_audio;
 #using scripts\mp\gametypes\_spawning;
@@ -34,10 +35,11 @@
 //#precache( "xmodel", MODEL_BASE );
 //#precache( "xmodel", MODEL_INTEL );
 
-#precache( "string", "MOD_OBJECTIVES_TDM" );
-#precache( "string", "MOD_OBJECTIVES_TDM_SCORE" );
-#precache( "string", "MOD_OBJECTIVES_TDM_HINT" );
+#precache( "string", "MOD_OBJECTIVES_INTEL" );
+#precache( "string", "MOD_OBJECTIVES_INTEL_SCORE" );
+#precache( "string", "MOD_OBJECTIVES_INTEL_HINT" );
 #precache( "string", "MOD_RETRIEVED_INTEL" );
+#precache( "string", "MOD_DROPPED_INTEL" );
 
 function main()
 {
@@ -225,13 +227,26 @@ function spawn_intel( spot )
 // self = gameobject
 function on_pickup_intel( player )
 {
-	player.has_intel = true;
-	player PlayLocalSound("mpl_flag_pickup_plr");
+	team = self gameobjects::get_owner_team();
+	otherTeam = util::getOtherTeam( team );
+
+	globallogic_audio::play_2d_on_team( "mpl_flagget_sting_friend", otherTeam );
+	globallogic_audio::play_2d_on_team( "mpl_flagget_sting_enemy", team );
 
 	level thread popups::DisplayTeamMessageToAll( &"MOD_RETRIEVED_INTEL", player );
 }
 // self = gameobject
 function on_drop_intel( player )
 {
-	IPrintLn( "Dropped!" );
+	team = self gameobjects::get_owner_team();
+	otherTeam = util::getOtherTeam( team );
+
+	globallogic_audio::play_2d_on_team( "mpl_flagdrop_sting_friend", otherTeam );
+	globallogic_audio::play_2d_on_team( "mpl_flagdrop_sting_enemy", team );
+
+	thread sound::play_on_players( "mp_war_objective_lost", otherTeam );
+
+	level thread popups::DisplayTeamMessageToAll( &"MOD_DROPPED_INTEL", player );
 }
+//globallogic_audio::play_2d_on_team( "mpl_flagcapture_sting_enemy", enemyTeam );
+//globallogic_audio::play_2d_on_team( "mpl_flagcapture_sting_friend", team );
