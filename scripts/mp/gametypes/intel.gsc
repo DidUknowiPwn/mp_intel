@@ -138,6 +138,7 @@ function on_player_spawned()
 	self thread m_util::spawn_bot_button();
 	self thread m_util::button_pressed( &ActionSlotOneButtonPressed, &generate_weights );
 	self thread m_util::button_pressed( &ActionSlotTwoButtonPressed, &spawn_intel );
+	self thread m_util::button_pressed( &ActionSlotThreeButtonPressed, &spawn_base );
 	#/
 }
 
@@ -179,7 +180,7 @@ function generate_weights()
 	ARRAY_ADD( a_weights, Int( N_MAX_PERCENTAGE - n_total_perc ) );
 
 	for( i = 0; i < a_weights.size; i++ )
-		IPrintLn( "[" + i + 1 + "]: " + a_weights[i] );
+		IPrintLn( "[" + i + "]: " + a_weights[i] );
 }
 
 
@@ -187,10 +188,42 @@ function generate_weights()
 // Spawn Code
 // ***************************
 // self = level.bases
-function spawn_base()
+function spawn_base( spot )
 {
+	// TODO
+	if ( !isdefined( spot ) )
+		spot = self;
 	// model
+	model = Spawn( "script_model", spot.origin );
+	model SetModel( teams::get_flag_model( "allies" ) );//model SetModel( MODEL_INTEL );
+	visuals = Array( model );
+
 	// trigger
+	trigger = Spawn( "trigger_radius_use", spot.origin + (0,0,32), 0, 32, 32 );
+	trigger SetCursorHint( "HINT_NOICON" );
+	//trigger SetHintString( "Press &&1 to upload Intel" );
+	trigger TriggerIgnoreTeam();
+	trigger UseTriggerRequireLookAt();
+
+	// gameobject - carry
+	obj = gameobjects::create_use_object( "neutral", trigger, visuals, (0,0,0), &"hardpoint" );
+	obj gameobjects::set_use_time( 5 );
+	obj gameobjects::set_use_text( "Uploading Intel" );
+	obj gameobjects::set_use_hint_text( "Press &&1 to upload Intel" );
+	obj gameobjects::set_team_use_time( "friendly", 5 );
+	obj gameobjects::set_team_use_time( "enemy", 10 );
+	obj gameobjects::allow_use( "any" );
+	obj gameobjects::set_visible_team( "any" );
+
+	obj.onBeginUse = &on_use_base;
+	obj.useWeapon = GetWeapon( "briefcase_bomb_defuse" );
+
+	return obj;
+}
+// self = gameobject
+function on_use_base( player )
+{
+	IPrintLn( player.name + " " + player.team );
 }
 // self = level.intels
 function spawn_intel( spot )
