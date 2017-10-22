@@ -208,22 +208,48 @@ function spawn_base( spot )
 	// gameobject - carry
 	obj = gameobjects::create_use_object( "neutral", trigger, visuals, (0,0,0), &"hardpoint" );
 	obj gameobjects::set_use_time( 5 );
-	obj gameobjects::set_use_text( "Uploading Intel" );
-	obj gameobjects::set_use_hint_text( "Press &&1 to upload Intel" );
-	obj gameobjects::set_team_use_time( "friendly", 5 );
-	obj gameobjects::set_team_use_time( "enemy", 10 );
+	obj gameobjects::set_use_text( "Press &&1 to use server" );
+	obj gameobjects::set_use_hint_text( "Press &&1 to use server" );
 	obj gameobjects::allow_use( "any" );
 	obj gameobjects::set_visible_team( "any" );
 
-	obj.onBeginUse = &on_use_base;
+	obj.onBeginUse = &on_begin_use_base;
+	obj.onUse = &on_use_base;
 	obj.useWeapon = GetWeapon( "briefcase_bomb_defuse" );
+	obj.intel_team = "allies"; // TODO
 
 	return obj;
 }
 // self = gameobject
+function on_begin_use_base( player )
+{
+	// TODO add base team
+	team = ( isdefined( self.intel_team ) ? self.intel_team : player.team );
+	
+	if ( team == player.team )
+	{
+		self gameobjects::set_use_time( 5 );
+		self gameobjects::set_use_text( "Hold ^3&&1^7 to upload intel" );
+		self gameobjects::set_use_hint_text( "Hold ^3&&1^7 to upload intel" );
+		IPrintLn( "Same team!" );
+	}
+	else
+	{
+		self gameobjects::set_use_time( 15 );
+		self gameobjects::set_use_text( "Hold ^3&&1^7 to steal intel" );
+		self gameobjects::set_use_hint_text( "Hold ^3&&1^7 to steal intel" );
+		IPrintLn( "Wrong team!" );
+	}
+}
+// self = gameobject
 function on_use_base( player )
 {
-	IPrintLn( player.name + " " + player.team );
+	// TODO add base team
+	team = ( isdefined( self.intel_team ) ? self.intel_team : player.team );
+	team_score = [[level._getTeamScore]]( player.team );
+
+	level thread popups::DisplayTeamMessageToAll( &"MOD_UPLOADED_INTEL", player );
+	[[level._setTeamScore]]( player.team, team_score + 1 );
 }
 // self = level.intels
 function spawn_intel( spot )
@@ -249,6 +275,7 @@ function spawn_intel( spot )
 	obj gameobjects::set_team_use_time( "enemy", 0 );
 	obj gameobjects::set_visible_team( "any" );
 	obj gameobjects::allow_carry( "any" );
+	//obj gameobjects::set_key_object( <intel> );
 
 	obj.onPickup = &on_pickup_intel;
 	obj.onDrop = &on_drop_intel;
